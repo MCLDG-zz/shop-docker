@@ -1,45 +1,58 @@
 Running on Docker Swarm
+=======================
+Here are the instructions to get Docker Swarm running on my 2 virtual Bluemix hosts.
 
-The original repo for the source code is here: git clone https://github.com/bijukunjummen/shopping-cart-cf-app.git
-
-I got Docker Swarm running on my 2 virtual Bluemix hosts, as follows.
-
-If using the shopping-cart-cf-app Spring project, the consul docker-compose file is in the 'consul' directory, and the 'swarm' directory contains the scripts for docker daemon and swarm join/manage.
+Firstly, on each Docker host, clone the git repo: https://github.com/MCLDG/shop-docker.git
 
 Consul
-Create a docker-compose-consul.yml file as follows, and 'up' it on one of the hosts:
+------
+On one of the hosts, start consul using docker-compose: `docker-compose -f docker-compose-consul.yml up -d`
+At this stage we are not running a Consul cluster, so just one instance is required.
 
-version: '2'
-
-services:
-  myconsul:
-    image: progrium/consul
-    restart: always
-    hostname: consul
-    ports:
-      - 8500:8500
-    command: "-server -bootstrap"
+Run the following scripts on each host
 
 Docker Daemon
-Restart the docker daemon with the -H settings below:
+-------------
 
-sudo service docker stop
-sudo docker daemon -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --cluster-store consul://159.122.251.69:8500 --cluster-advertise eth0:2375
+Restart the docker daemon: `swarm/run-daemon.sh`
+
+The daemon settings ensure it uses Consul:
+
+`sudo docker daemon -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --cluster-store consul://159.122.251.69:8500 --cluster-advertise eth0:2375`
+
+Note that once you do this the usual docker commands will no longer work as they won't be able to find the daemon.
+So you need to either pass '-H tcp://159.122.251.69:2375' to each docker command, or set the DOCKER_HOST, as in:
+`export DOCKER_HOST=tcp://159.122.251.69:2375`
 
 Swarm
+-----
 On each host, run the following to 'join' to the swarm. The IP address of consul should match the host server where consul is running, and the host addr of the 'join' command should match the current host:
 
+```
 docker run -d swarm join --addr=159.122.251.69:2375 consul://159.122.251.69:8500/swarm
+```
+or use the script in `swarm/join-swarm.sh`
 
 On one of the hosts, run the swarm manager:
 
+```
 docker run -d -p 8333:2375 swarm manage consul://159.122.251.69:8500/swarm
+```
+or use the script in `swarm/manage-swarm.sh`
 
 I believe the swarm port here (8333) can be anything, but it must map to 2375, which is the docker daemon port.
 
+Note that after you start Swarm you now have two different ports that will provide different information in response to docker commands. Port 2375 will respond with a host-specific view (i.e. the current host), whereas port 8333 will respond with a Swarm view, i.e. all Swarm hosts.
+So to receive a Swarm response you need to either pass '-H tcp://159.122.251.69:8333' to each docker command, or set the DOCKER_HOST, as in:
+```
+export DOCKER_HOST=tcp://159.122.251.69:8333
+```
+
 Check that the swarm is running. This connects to the swarm manager daemon and should display the info below. The bolded entries are swarm specific - if they are not there you are not seeing the swarm status. Under Nodes you should also see host names (not just IP addresses), and a status of 'Healthy':
 
+```
 docker -H tcp://159.122.251.69:8333 info
+```
 
 Containers: 10
  Running: 7
@@ -76,9 +89,10 @@ Nodes: 2
 .
 
 Running the SHOP application
-If using the shopping-cart-cf-app Spring project, the scripts mentioned below are in the 'shop-on-swarm' directory
+----------------------------
+If using the shopping-cart-cf-app Spring project, the scripts mentioned below are in the `shop-on-swarm` directory
 
-The docker-compose-blmxhost.yml will run the application on my 2 Bluemix virtual servers, on a Swarm cluster. Compared to the standard docker-compose.yml file there are 
+The `docker-compose-blmxhost.yml` will run the application on my 2 Bluemix virtual servers, on a Swarm cluster. Compared to the standard docker-compose.yml file the only change is to pin the Redis master to a specific host.
 
 Make sure Redis master runs on a specific host. This is because the application connects to this host specifically, as configured in the bootInDocker.sh. I don't like this but haven't had the time to fix it so that the app uses Docker DNS and networking to find Redis:
 
@@ -86,7 +100,8 @@ Make sure Redis master runs on a specific host. This is because the application 
       - constraint:node==mcdg-centos-71939519
 
 SPM
-I run SPM as part of the docker-compose file, as follows:
+---
+I run SPM as part of the docker-compose file, as follows, so no need to start this separately. However, you will need to scale it depending on the number of Docker hosts you are running, so that an agent runs on each host:
 
   sematext-agent:
     image: 'sematext/sematext-agent-docker:latest'
@@ -103,15 +118,27 @@ Note the 'affinity' filter; this allows me to scale the SPM agent to run on each
 
 I scale it manually at the moment, but this could be scaled using a script that counts the number of hosts:
 
+```
 docker-compose scale sematext-agent=2
+```
 
 Docker-Compose
+--------------
 To run the docker-compose file on Swarm, you need to set the DOCKER_HOST to point to Swarm, as follows:
 
+```
 export DOCKER_HOST=tcp://159.122.251.69:8333
 docker-compose up
+```
 
 Same goes for stopping the application:
-
+```
 export DOCKER_HOST=tcp://159.122.251.69:8333
 docker-compose down
+```
+Reference
+---------
+The original repo for the Shopping Cart source code is here: 
+```
+git clone https://github.com/bijukunjummen/shopping-cart-cf-app.git
+```
