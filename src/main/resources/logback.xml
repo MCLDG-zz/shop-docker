@@ -4,14 +4,14 @@
 
 	<conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
 
-	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
 		</encoder>
 	</appender>
 
 	<root level="INFO">
-		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="STDOUT" />
 	</root>
 	
 	<!-- logger name="org.springframework" level="DEBUG"/ -->

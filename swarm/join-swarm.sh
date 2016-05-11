@@ -1,0 +1,1 @@
+docker run -d swarm join --addr=159.122.251.69:2375 consul://159.122.251.69:8500/swarm

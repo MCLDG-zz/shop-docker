@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+  lb:
+    image: dockercloud/haproxy
+    links:
+      - shop1
+      - shop2
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "80:80"
+
+  shop1:
+    image: blmxmcdg/shopapp
+    hostname: shop1
+    ports:
+      - "8081"
+
+  shop2:
+    image: blmxmcdg/shopapp
+    hostname: shop2
+    ports:
+      - "8082"
+
+  redis:
+    image: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    environment:
+      - constraint:node==mcdg-centos-71939519
+
+  sematext-agent:
+    image: 'sematext/sematext-agent-docker:latest'
+    environment:
+      - LOGSENE_TOKEN=ffb28044-957d-4d1e-b78e-0a1eafb1cdbc
+      - SPM_TOKEN=0f31bb82-a715-44f8-914d-ef6f11b52061
+      - affinity:container!=sematext-agent*
+    privileged: true
+    restart: always
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'

@@ -1,29 +1,30 @@
-nginx:
-  build: nginx/
-  links:
-    - shop1
-    - shop2
-  ports:
-   - "80:80"
+version: '2'
 
-shop1:
-  build: .
-  hostname: shop1
-  links:
-    - redis
-  ports:
-    - "8081:8080"
+services:
+  lb:
+    image: dockercloud/haproxy
+    links:
+      - shop1
+      - shop2
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "80:80"
 
-shop2:
-  build: .
-  hostname: shop2
-  links:
-    - redis
-  ports:
-    - "8082:8080"
-
-redis:
-  image: redis
-  hostname: redis
-  ports:
-    - "6379:6379"
+  shop1:
+    build: .
+    hostname: shop1
+    ports:
+      - "8081"
+  
+  shop2:
+    build: .
+    hostname: shop2
+    ports:
+      - "8082"
+  
+  redis:
+    image: redis
+    hostname: redis
+    ports:
+      - "6379:6379"

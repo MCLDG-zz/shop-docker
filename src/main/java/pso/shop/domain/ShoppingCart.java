@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * A temporary object to hold the details of what the user intends to 
  * purchase
@@ -13,6 +15,8 @@ import java.util.List;
  */
 
 public class ShoppingCart implements Serializable{
+	static final Logger LOG = LoggerFactory.getLogger(ShoppingCart.class);
+	
 	private static final long serialVersionUID = 4573229359755965961L;
 	//Linked hashmap to maintain order of added items
 	private LinkedHashMap<Long, OrderProduct> map = new LinkedHashMap<Long, OrderProduct>();
@@ -24,6 +28,7 @@ public class ShoppingCart implements Serializable{
 	 * @param orderProduct
 	 */
 	public OrderProduct addToCart(OrderProduct orderProduct) {
+		LOG.info("Adding item to cart: " + orderProduct.getProduct().getName() + " quantity: " + orderProduct.getPurchasedQuantity());
 		//If the item already exists in the cart, increment quantity..
 		if (this.map.containsKey(orderProduct.getProduct().getId())) {
 			OrderProduct existingOrderProduct = this.map.get(orderProduct.getProduct().getId());
