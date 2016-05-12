@@ -3,6 +3,8 @@
 # with this script running on the 'master' node and the other running on a 'non-master' node. The master node
 # will run consul (which is not clustered at this moment) and the Redis master.
 
+chmod -R 755 ./
+
 echo "Running Docker daemon"
 ./run-daemon-host69.sh &
 sleep 20
@@ -18,7 +20,7 @@ read -n1 -r -p "Now run the accompanying script (start-all-host240.sh) on the no
 
 echo "Joining and Managing Swarm"
 cd ..
-./join-swarm.sh
+./join-swarm-host69.sh
 sleep 5
 ./manage-swarm.sh
 sleep 5
