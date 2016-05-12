@@ -1,12 +1,18 @@
 Running on Docker Swarm
 =======================
-Here are the instructions to get Docker Swarm running on my 2 virtual Bluemix hosts.
+Here are the instructions to get Docker Swarm running on my 2 virtual Bluemix hosts. Host details are as follows:
 
+mcdg-centos-71939519: 159.122.251.69
+mcdg-centos-75880098: 159.122.251.240
+
+Pre-requisites
+--------------
 Firstly, on each Docker host, clone the git repo: https://github.com/MCLDG/shop-docker.git
+Make sure docker and docker-compose are installed, and that the docker daemon is running (it should run as a service - `sudo service docker start`)
 
 Consul
 ------
-On one of the hosts, start consul using docker-compose: `docker-compose -f docker-compose-consul.yml up -d`
+On one of the hosts, in the consul directory, start consul using docker-compose: `docker-compose -f docker-compose-consul.yml up -d`
 At this stage we are not running a Consul cluster, so just one instance is required.
 
 Run the following scripts on each host
@@ -31,7 +37,7 @@ On each host, run the following to 'join' to the swarm. The IP address of consul
 ```
 docker run -d swarm join --addr=159.122.251.69:2375 consul://159.122.251.69:8500/swarm
 ```
-or use the script in `swarm/join-swarm.sh`
+or use the script in `swarm/join-swarm.sh` - note, make sure to change the IP address so that it matches the current docker host
 
 On one of the hosts, run the swarm manager:
 
@@ -142,3 +148,26 @@ The original repo for the Shopping Cart source code is here:
 ```
 git clone https://github.com/bijukunjummen/shopping-cart-cf-app.git
 ```
+
+Troubleshooting
+---------------
+It took some time to get the node constraint working for Redis; I wanted to pin Redis to a specific host since the Sring application automatically looked for it there. I tried various options and combinations of labels and constraints, and found the following to work.
+
+I had to define a label on the docker daemon (which you can see if you run `docker info`), but the label name cannot be `node`. If you check the docker swarm source code, it seems to throw an exception if a constraint is applied using the keyword `node`. So I used `name` instead, as in:
+```
+sudo docker daemon --label name=mcdg-centos-71939519 -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --cluster-store consul://159.122.251.69:8500 --cluster-advertise eth0:2375
+```
+
+Now when you run Redis you need to apply the constraint. I applied it using an environment constraint in the docker-compose file, as follows:
+
+```
+  redis:
+    image: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    environment:
+      - constraint:name==mcdg-centos-71939519
+```
+
+Note: make sure you use '==' in the docker-compose or docker run statement, and '=' in the --label parameter in the docker daemon command.

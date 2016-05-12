@@ -29,7 +29,8 @@ services:
     ports:
       - "6379:6379"
     environment:
-      - constraint:node==mcdg-centos-71939519
+      - constraint:name==mcdg-centos-71939519
+
 
   sematext-agent:
     image: 'sematext/sematext-agent-docker:latest'
