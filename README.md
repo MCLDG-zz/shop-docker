@@ -171,3 +171,7 @@ Now when you run Redis you need to apply the constraint. I applied it using an e
 ```
 
 Note: make sure you use '==' in the docker-compose or docker run statement, and '=' in the --label parameter in the docker daemon command.
+
+To Do
+-----
+HAProxy load balancer is currently only balancing to shop containers on the same node 

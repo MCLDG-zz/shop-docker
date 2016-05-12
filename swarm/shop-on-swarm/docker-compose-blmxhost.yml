@@ -31,7 +31,6 @@ services:
     environment:
       - constraint:name==mcdg-centos-71939519
 
-
   sematext-agent:
     image: 'sematext/sematext-agent-docker:latest'
     environment:
