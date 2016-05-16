@@ -1,3 +1,12 @@
+Continuous Integration
+======================
+I've used the CI platform from here: (https://blog.codecentric.de/en/2015/10/continuous-integration-platform-using-docker-container-jenkins-sonarqube-nexus-gitlab/)
+
+and setup the triggering as per this article: (https://lkrnac.net/blog/2014/03/continuous-delivery/)
+
+Once this is all setup, I configured a standard Jenkins job using the Maven build, with a build trigger of 'Build when a change is pushed to GitHub'
+
+
 Running on Docker Swarm
 =======================
 Here are the instructions to get Docker Swarm running on my 2 virtual Bluemix hosts. Host details are as follows:
