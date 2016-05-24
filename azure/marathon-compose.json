@@ -1,0 +1,64 @@
+{
+      "id": "shop",
+      "apps":
+      [
+			{
+              "container": 
+              {
+                "type": "DOCKER",
+                "docker": 
+                {
+                  "image": "blmxmcdg/shopapp",
+                  "privileged": true,
+                  "network": "BRIDGE",
+                  "parameters": [
+                      { "key": "tty", "value": "true" }
+                  ],
+                  "portMappings": [
+                            {
+                                "containerPort": 8081,
+                                "hostPort": 0,
+                                "protocol": "tcp"
+                            }
+                  ]
+                }
+              },
+              "id": "shop",
+              "instances": 2,
+              "dependencies": ["/redis"],
+              "cpus": 1,
+              "mem": 64
+            }
+      ]
+},
+{
+      "id": "redis",
+      "apps":[
+       {
+              "container": 
+              {
+                "type": "DOCKER",
+                "docker": 
+                {
+                  "image": "redis",
+                  "network": "BRIDGE",
+                  "privileged": true,
+                  "parameters": [
+                      { "key": "tty", "value": "true" }
+                  ],
+                  "portMappings": [
+                            {
+                                "containerPort": 6379,
+                                "hostPort": 6379,
+                                "protocol": "tcp"
+                            }
+                  ]
+                }
+              },
+              "id": "redis",
+              "instances": 1,
+              "cpus": 1,
+              "mem": 64
+        }
+      ]
+}
