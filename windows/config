@@ -1,0 +1,19 @@
+apiVersion: v1
+clusters:
+- cluster:
+    server: https://107.167.186.160
+    certificate-authority-data: -----BEGIN CERTIFICATE----- MIIDKjCCAhKgAwIBAgIRAK4t+s6jwbKRNKRd0In+AU4wDQYJKoZIhvcNAQELBQAw PjE8MDoGA1UEAwwzYXNpYS1lYXN0MS1hLTkwNzQxODA5MjQwMC1tY2RnLWNsdXN0 ZXItMUAxNDY0MjMyMTQzMB4XDTE2MDUyNjAzMDkwM1oXDTIxMDUyNTAzMDkwM1ow PjE8MDoGA1UEAwwzYXNpYS1lYXN0MS1hLTkwNzQxODA5MjQwMC1tY2RnLWNsdXN0 ZXItMUAxNDY0MjMyMTQzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA r6MnnjLKt1uN9YHSWIzbOexl1ZV9KrCwvZ+pmWcfV+HsRtwymlX0Bbk2H6oxWnyP LtUR6o0Co/gjQNOxmCnfiQU9FChDSvi/6zXLJVSofAtdzH4AUhFSzr3APe+38sl7 Lo4RlK70/69Pif8zu5Hn7uI+EXqgbutJPQF66e5/h82XVchuIlcTmq+ok/umBlUT huzNqZ3QEUQr82HxRzSH5LvzFbg3dWm2T1H2axfkbedurQsIcJf78cuFRe9d0rVj +y7qZgUa5rfrzvqD1SWBx9ysI+l1TiPYG9zEA/d8yjb1Q/naf2l4IuJcxUnDn61X 9s2mYQgUdrJv9LSFtTtoKQIDAQABoyMwITAOBgNVHQ8BAf8EBAMCAgQwDwYDVR0T AQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEARvdyHq9n92/O33ESQHVLTf7r GidJ5L0EOEVGck87+gx0igpin6O10iWnAWWTFQoQBW+m+pDguYMJn8aMHrmgrSWE dUW3Kb6zftz1+/KaTjcHzyiHl3tNnq6ny67SGQz4y0BHzWNJ8YIlCVOhH7iR2kag MUJZJ8WBYi1X0MgsO9qWZnOKHAlDEkeDgCWO+XzJN87OoWLnf3AiMfbeA07erm93 HkENI25rfCZ5lDZb0GjdhHvQMbGHSGPvcmxWqyVmxGv5XtQvtyBn9NK5hCfLQ7in bSP19Yi7b79vx9HAKfH+9I6wGwdTKXFJ/IdAxjthVKN6sVyqV2fhTljxHQqTMQ== -----END CERTIFICATE----- 
+  name: mcdg-cluster-1
+contexts:
+- context:
+    cluster: mcdg-cluster-1
+    namespace: default
+    user: admin
+  name: default-context
+current-context: default-context
+kind: Config
+preferences: {}
+users:
+- name: admin
+  user:
+    token: bp0EKeUFQmhiQiOk
