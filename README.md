@@ -11,13 +11,35 @@ Running on Docker Swarm
 =======================
 Here are the instructions to get Docker Swarm running on my 2 virtual Bluemix hosts. Host details are as follows:
 
-mcdg-centos-71939519: 159.122.251.69
-mcdg-centos-75880098: 159.122.251.240
+- mcdg-centos-71939519: 159.122.251.69
+- mcdg-centos-75880098: 159.122.251.240
 
 Pre-requisites
 --------------
 Firstly, on each Docker host, clone the git repo: https://github.com/MCLDG/shop-docker.git
 Make sure docker and docker-compose are installed, and that the docker daemon is running (it should run as a service - `sudo service docker start`)
+
+Check out the scripts in ./shop-docker/swarm/ and ./shop-docker/swarm/shop-on-swarm, and change the IP addresses to match your hosts. I should probably just pick these up from ENV to make it easier.
+
+Quickstart
+----------
+On swarm master node: 
+```
+cd shop-docker/swarm/
+./start-all-host69.sh
+```
+At some stage it will display a message to start the accompanying script on the non-master node. Once you've done this, hit a key on the master node to continue the master node script:
+```
+cd shop-docker/swarm/
+./start-all-host240.sh
+```
+Navigate to the host that is running the HAProxy load balancer. In my case its either http://159.122.251.240 or http://159.122.251.69. Determine this by running the script ./docker-ps.sh and looking at which host is running 'dockercloud/haproxy'.
+
+Since the demo also includes Sematext SPM monitoring, the tokens configured in docker-compose-blmxhost.yml are my personal tokens. You’ll need to replace these. You can obtain tokens by signing up for the free service at Sematext. The demo will look better if you scale some containers before starting so that Sematext shows a trend. You can do this using: ./scale-shops-on-swarm.sh
+
+If you wish to scale Sematext so it collects metrics from both hosts, you'll need to scale it using: ./scale-spm-on-swarm.sh
+
+The quick start scripts do the same as all the steps below
 
 Consul
 ------
